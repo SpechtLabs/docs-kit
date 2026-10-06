@@ -16,7 +16,7 @@ export default defineUserConfig({
   plugins: [
     docsKitPlugin({
       github: {
-        repos: ["SpechtLabs/tka"],
+        repos: ["SpechtLabs/sigil", "SpechtLabs/telegram-tui", "SpechtLabs/StaticPages"],
         orgs: ["SpechtLabs"],
       },
     }),

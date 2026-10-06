@@ -18,10 +18,21 @@ export interface Project {
   created_at: string;
 }
 
-export interface ReleaseAsset {
-  id: number;
+// The platforms the Releases component offers downloads for
+export const platforms = {
+  darwin_arm64: "macOS (Apple silicon)",
+  darwin_amd64: "macOS (Intel)",
+  linux_amd64: "Linux (x64)",
+  linux_arm64: "Linux (ARM64)",
+  windows_amd64: "Windows (x64)",
+  windows_arm64: "Windows (ARM64)",
+} as const;
+
+export type Platform = keyof typeof platforms;
+
+export interface Download {
   name: string;
-  browser_download_url: string;
+  url: string;
 }
 
 export interface Release {
@@ -31,8 +42,10 @@ export interface Release {
   html_url: string;
   published_at: string;
   prerelease: boolean;
-  body: string;
-  assets: ReleaseAsset[];
+  // The release notes as HTML, rendered and sanitized by GitHub
+  notes_html: string;
+  // The archive to download for each platform the release ships
+  downloads: Partial<Record<Platform, Download>>;
 }
 
 export interface RepoData {

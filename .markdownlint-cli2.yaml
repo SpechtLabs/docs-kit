@@ -13,6 +13,7 @@ config:
     allowed_elements:
       - FileTree
       - SwaggerUI
+      - Releases
 
   # MD040: Every fenced code block needs a language tag.
   MD040: true
