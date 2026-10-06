@@ -1,0 +1,12 @@
+{
+  "openapi": "3.0.3",
+  "info": { "title": "docs-kit demo API", "version": "1.0.0" },
+  "paths": {
+    "/hello": {
+      "get": {
+        "summary": "Say hello",
+        "responses": { "200": { "description": "A greeting" } }
+      }
+    }
+  }
+}

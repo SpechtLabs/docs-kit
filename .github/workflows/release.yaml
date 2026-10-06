@@ -1,0 +1,35 @@
+name: Release
+
+# release-please keeps a release pull request open with the next version and
+# changelog, worked out from the Conventional Commits on main. Merging it tags
+# the release (vX.Y.Z), which is what the docs sites pin as
+# "github:SpechtLabs/docs-kit#vX.Y.Z".
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    name: Release Please
+    runs-on: ubuntu-latest
+    steps:
+      # GitHub doesn't start workflows for what GITHUB_TOKEN does, so CI on
+      # the release pull request waits for approval. RELEASE_PLEASE_TOKEN, a
+      # fine-grained personal access token with read and write access to this
+      # repository's contents, pull requests and issues, makes it an ordinary
+      # pull request whose CI runs. Without it, GITHUB_TOKEN is used.
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          config-file: .release-please-config.json
+          manifest-file: .release-please-manifest.json

@@ -1,0 +1,45 @@
+# The components the docs sites render
+components:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "components/**"
+
+# The VuePress plugin: build-time GitHub data, Markdown containers, client config
+plugin:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/**"
+          - "dist/**"
+
+# The demo site CI builds as the integration test
+demo:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "demo/**"
+
+# Build and CI plumbing
+build:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/**"
+          - ".mise.toml"
+          - ".pre-commit-config.yaml"
+          - ".markdownlint-cli2.yaml"
+          - ".yamllint.yaml"
+          - ".editorconfig"
+          - "renovate.json"
+          - "package.json"
+          - "bun.lock"
+          - "tsconfig*.json"
+
+# Add 'enhancement' to any PR whose head branch starts with `feat` or `feature`
+enhancement:
+  - head-branch:
+      - "^feat"
+      - "^feature"
+
+# Add 'bug' to any PR whose head branch starts with `fix` or `bug`
+bug:
+  - head-branch:
+      - "^fix"
+      - "^bug"

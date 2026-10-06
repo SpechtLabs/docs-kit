@@ -1,0 +1,84 @@
+name: CI
+
+# Lints, checks that the committed dist/ matches src/, and builds the demo
+# site, which uses every component and container (the integration test).
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  # Each job installs the tools listed below with mise-action's install_args.
+  # Without this, `mise run` installs every tool in .mise.toml first.
+  MISE_TASK_RUN_AUTO_INSTALL: "false"
+  # renovate: datasource=github-releases depName=jdx/mise extractVersion=^v(?<version>.+)$
+  MISE_VERSION: 2026.10.2
+  # Every tool a job here runs, installed in every job, so all jobs share
+  # one mise-action cache.
+  MISE_TOOLS: bun node markdownlint-cli2 yamllint actionlint shellcheck
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up mise
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+        with:
+          version: ${{ env.MISE_VERSION }}
+          install_args: ${{ env.MISE_TOOLS }}
+
+      - name: Lint Markdown
+        run: mise run md-lint
+
+      - name: Type-check src/, the components and the demo config
+        run: mise run typecheck
+
+      - name: Lint YAML
+        run: mise run yaml-lint
+
+      # The matcher turns actionlint's output into annotations on the PR diff.
+      - name: Lint workflows
+        run: |
+          echo "::add-matcher::.github/actionlint-matcher.json"
+          mise run actionlint
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up mise
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+        with:
+          version: ${{ env.MISE_VERSION }}
+          install_args: ${{ env.MISE_TOOLS }}
+
+      # Consumers install docs-kit from git, so what's committed in dist/ is
+      # what they run.
+      - name: Check dist/ is up to date
+        run: mise run dist-check
+
+      - name: Build the demo site
+        run: mise run demo-build
+        env:
+          # Authenticates the build-time GitHub API calls (60 requests/hour
+          # without it, 1,000 with it).
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

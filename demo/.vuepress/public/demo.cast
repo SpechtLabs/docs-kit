@@ -1,0 +1,5 @@
+{"version": 2, "width": 60, "height": 6, "timestamp": 1791300000, "env": {"SHELL": "/bin/zsh", "TERM": "xterm-256color"}}
+[0.5, "o", "$ "]
+[1.0, "o", "echo hello from docs-kit"]
+[1.6, "o", "\r\nhello from docs-kit\r\n"]
+[2.2, "o", "$ "]

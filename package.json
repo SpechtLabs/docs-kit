@@ -1,0 +1,53 @@
+{
+  "name": "@spechtlabs/docs-kit",
+  "version": "0.1.0",
+  "description": "Shared VuePress components, Markdown containers and build-time GitHub data for the SpechtLabs docs sites",
+  "type": "module",
+  "author": "Cedric Specht <cedric@specht-labs.de>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SpechtLabs/docs-kit.git"
+  },
+  "engines": {
+    "node": ">=24.18.0 <25"
+  },
+  "packageManager": "bun@1.4.2",
+  "exports": {
+    ".": {
+      "types": "./dist/node/index.d.ts",
+      "default": "./dist/node/index.js"
+    }
+  },
+  "files": [
+    "components",
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "vue-tsc -p tsconfig.json",
+    "demo:dev": "vuepress dev demo",
+    "demo:build": "vuepress build demo --clean-cache --clean-temp"
+  },
+  "dependencies": {
+    "asciinema-player": "^3.17.0",
+    "markdown-it-container": "^4.0.0",
+    "swagger-ui-dist": "^5.33.1"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0",
+    "vuepress": ">=2.0.0-rc.26",
+    "vuepress-theme-plume": ">=1.0.0-rc.192"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.1",
+    "@vuepress/bundler-vite": "2.0.0-rc.31",
+    "sass-embedded": "^1.105.1",
+    "typescript": "^6.0.3",
+    "vue": "^3.5.43",
+    "vue-tsc": "^3.3.12",
+    "vuepress": "2.0.0-rc.31",
+    "vuepress-theme-plume": "1.0.0-rc.212"
+  }
+}

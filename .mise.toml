@@ -1,0 +1,100 @@
+# .mise.toml — local tooling, exact pins (repo convention)
+#
+# The tasks below define how docs-kit is built and checked. CI uses these
+# tasks. Renovate keeps every pin in this file current.
+
+[settings]
+# The pins below are the only source of tool versions; mise never reads them
+# from .nvmrc, .bun-version, package.json engines and friends.
+idiomatic_version_file_enable_tools = []
+
+[tools]
+# The demo site builds under bun. bun runs the vuepress CLI through its
+# `#!/usr/bin/env node` shebang, so node is the runtime the build really uses;
+# markdownlint-cli2 is an npm package mise installs with this node too. Keep
+# node in lockstep with engines.node and @types/node in package.json.
+bun = "1.4.2"
+node = "24.21.0"
+markdownlint-cli2 = "0.23.3"
+
+# Pre-commit for Git hooks
+pre-commit = "4.6.2"
+
+# Linters
+yamllint = "1.38.0"
+actionlint = "1.7.12"
+# actionlint runs shellcheck on every `run:` script when it's on PATH, and
+# silently skips them when it isn't.
+shellcheck = "0.11.0"
+
+# Pins GitHub Actions to commit SHAs (see the update-gha task)
+pinact = "5.0.0"
+
+[tasks.install]
+description = "Install dependencies from the frozen Bun lockfile"
+run = "bun install --frozen-lockfile"
+
+[tasks.update]
+description = "Update dependencies within their ranges and refresh bun.lock"
+run = "bun update"
+
+# dist/ is committed (tsconfig.build.json says why), so run this after
+# changing anything under src/ and commit the result.
+[tasks.build]
+description = "Compile src/ into dist/"
+depends = ["install"]
+run = "bun run build"
+
+[tasks.dist-check]
+description = "Fail when the committed dist/ doesn't match a fresh build of src/"
+depends = ["build"]
+run = "git diff --exit-code -- dist || (echo 'dist/ is stale: run `mise run build` and commit it' >&2; exit 1)"
+
+[tasks.demo]
+description = "Serve the demo site with hot reload"
+depends = ["build"]
+run = "bun run demo:dev"
+
+# The demo site uses every component and container, so building it is the
+# integration test: it fails when a component breaks VuePress's SSR pass.
+[tasks.demo-build]
+description = "Build the demo site into demo/.vuepress/dist"
+depends = ["build"]
+run = "bun run demo:build"
+
+# `mise run fmt` rewrites what has a canonical form; `mise run lint` checks
+# the same things without touching a file.
+[tasks.fmt]
+description = "Fix what markdownlint can fix"
+run = "markdownlint-cli2 --fix"
+
+[tasks.lint]
+description = "Lint the Markdown, the TypeScript and Vue components, YAML and workflows"
+depends = ["md-lint", "typecheck", "yaml-lint", "actionlint"]
+
+# The globs live in .markdownlint-cli2.yaml, so the pre-commit hook, this task
+# and an editor agree on what is linted.
+[tasks.md-lint]
+description = "Lint the README and the demo site's Markdown"
+run = "markdownlint-cli2"
+
+[tasks.typecheck]
+description = "Type-check src/, the components and the demo config"
+depends = ["install"]
+run = "bun run typecheck"
+
+[tasks.yaml-lint]
+description = "Lint every YAML file in the repository"
+run = "yamllint --strict ."
+
+[tasks.actionlint]
+description = "Lint the GitHub Actions workflows"
+run = "actionlint"
+
+[tasks.check]
+description = "The definition of done: every gate CI runs"
+depends = ["lint", "dist-check", "demo-build"]
+
+[tasks.update-gha]
+description = "Pin GitHub Actions to commit SHAs (Renovate keeps them current afterwards)"
+run = "pinact run"

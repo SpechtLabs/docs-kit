@@ -1,0 +1,14 @@
+extends: relaxed
+
+rules:
+  line-length: disable
+  indentation:
+    level: error
+    spaces: consistent
+    indent-sequences: consistent
+
+ignore: |
+  **/node_modules/
+  demo/.vuepress/.temp/
+  demo/.vuepress/.cache/
+  demo/.vuepress/dist/

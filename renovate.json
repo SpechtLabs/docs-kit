@@ -1,0 +1,145 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommits",
+    "helpers:pinGitHubActionDigests",
+    "customManagers:githubActionsVersions"
+  ],
+  "timezone": "Europe/Berlin",
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Dependency Dashboard",
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 8,
+  "rebaseWhen": "behind-base-branch",
+  "rangeStrategy": "bump",
+  "semanticCommitType": "chore",
+  "semanticCommitScope": "deps",
+  "labels": [
+    "dependencies"
+  ],
+  "osvVulnerabilityAlerts": true,
+  "vulnerabilityAlerts": {
+    "labels": [
+      "dependencies",
+      "security"
+    ]
+  },
+  "pre-commit": {
+    "enabled": true
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": [
+      "before 6am on monday"
+    ],
+    "automerge": true
+  },
+  "packageRules": [
+    {
+      "description": "mise is pinned as MISE_VERSION in the CI workflow; move it only to a release a day old, the age mise-action waited for before the pin.",
+      "matchDepNames": [
+        "jdx/mise"
+      ],
+      "groupName": "mise",
+      "groupSlug": "mise",
+      "minimumReleaseAge": "1 day"
+    },
+    {
+      "description": "Automerge digest, pin, patch, and minor updates once CI passes.",
+      "matchUpdateTypes": [
+        "digest",
+        "pin",
+        "pinDigest",
+        "patch",
+        "minor"
+      ],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    },
+    {
+      "description": "Keep major updates explicit.",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": false,
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Group GitHub Actions updates together.",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "groupName": "GitHub Actions",
+      "groupSlug": "github-actions",
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true,
+      "dependencyDashboardApproval": false
+    },
+    {
+      "description": "Group the Node packages together.",
+      "matchManagers": [
+        "bun",
+        "npm"
+      ],
+      "groupName": "Node packages",
+      "groupSlug": "node-packages"
+    },
+    {
+      "description": "Update the VuePress release set together: the theme's prereleases expect exact versions of the bundler, the plugins and the @mdit plugins pinned under overrides.",
+      "matchPackageNames": [
+        "vuepress",
+        "vuepress-theme-plume",
+        "@mdit/**",
+        "@pengzhanbo/utils",
+        "@vuepress/**",
+        "@vuepress-plume/**"
+      ],
+      "groupName": "VuePress stack",
+      "groupSlug": "vuepress-stack"
+    },
+    {
+      "description": "Leave engines.node alone; it follows the node pin in .mise.toml and is bumped by hand with a Node major.",
+      "matchDepTypes": [
+        "engines"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Do not add npm as a separate tool; bun manages packages and node already includes npm.",
+      "matchFileNames": [
+        ".mise.toml"
+      ],
+      "matchDepNames": [
+        "npm"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "bun is pinned in .mise.toml and as packageManager in package.json; move them at once.",
+      "matchDepNames": [
+        "bun"
+      ],
+      "groupName": "bun",
+      "groupSlug": "bun"
+    },
+    {
+      "description": "Node is pinned in .mise.toml, and @types/node follows its major; move them at once.",
+      "matchDepNames": [
+        "node",
+        "@types/node"
+      ],
+      "groupName": "Node toolchain",
+      "groupSlug": "node-toolchain"
+    },
+    {
+      "description": "Hold TypeScript at 6 and below. TypeScript 7 is the native compiler and has no JavaScript API, and @vue/compiler-sfc reads files through that API (ts.sys) to resolve imported prop types in .vue components, so the VuePress build breaks on it. Lift this once @vue/compiler-sfc no longer needs it.",
+      "matchPackageNames": [
+        "typescript"
+      ],
+      "allowedVersions": "<7"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  // Compiles src/ to dist/, which is committed: consumers install docs-kit as
+  // a git dependency, and neither Node (no type stripping under
+  // node_modules) nor bun (no lifecycle scripts for dependencies) would
+  // build it for them. The .vue components ship as source; VuePress's Vite
+  // build compiles them like the theme's own.
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "rootDir": "src",
+    "outDir": "dist",
+    "declaration": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts", "components/shims.d.ts"]
+}
