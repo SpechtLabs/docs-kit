@@ -1,4 +1,4 @@
-import type { GitHubData } from "../shared/types.js";
+import { type GitHubData } from "../shared/types.js";
 export interface GitHubOptions {
     repos?: string[];
     orgs?: string[];

@@ -1,10 +1,13 @@
-import type {
-  Contributor,
-  GitHubData,
-  OrgData,
-  Project,
-  Release,
-  RepoData,
+import {
+  type Contributor,
+  type Download,
+  type GitHubData,
+  type OrgData,
+  type Platform,
+  type Project,
+  type Release,
+  type RepoData,
+  platforms,
 } from "../shared/types.js";
 
 // Fetching this in the browser burns through the unauthenticated rate limit
@@ -13,11 +16,12 @@ import type {
 // build time, authenticated with GITHUB_TOKEN when it is set.
 
 const perPage = 100;
+const releaseCount = 10;
 
-function headers(): Record<string, string> {
+function headers(accept: string): Record<string, string> {
   const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
   return {
-    Accept: "application/vnd.github+json",
+    Accept: accept,
     "X-GitHub-Api-Version": "2022-11-28",
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
@@ -28,10 +32,10 @@ const attempts = 3;
 // Retries network errors and server errors, which do happen when a build
 // fires a few dozen requests at once. Client errors (404, rate limits) won't
 // get better on a retry, so they fail straight away.
-async function fetchWithRetry(url: string): Promise<Response> {
+async function fetchWithRetry(url: string, accept: string): Promise<Response> {
   for (let attempt = 1; ; attempt++) {
     try {
-      const res = await fetch(url, { headers: headers() });
+      const res = await fetch(url, { headers: headers(accept) });
       if (res.status < 500 || attempt === attempts) return res;
     } catch (err) {
       if (attempt === attempts) throw err;
@@ -40,8 +44,11 @@ async function fetchWithRetry(url: string): Promise<Response> {
   }
 }
 
-async function fetchJson(path: string): Promise<any> {
-  const res = await fetchWithRetry(`https://api.github.com/${path}`).catch(
+async function fetchJson(
+  path: string,
+  accept = "application/vnd.github+json",
+): Promise<any> {
+  const res = await fetchWithRetry(`https://api.github.com/${path}`, accept).catch(
     (err) => {
       throw new Error(`GET ${path}: ${err.cause?.message ?? err.message}`);
     },
@@ -106,8 +113,13 @@ async function fetchRepoData(fullName: string): Promise<RepoData> {
 
   const [contributors, releases] = await Promise.all([
     fetchAllPages(`repos/${fullName}/contributors`),
-    // The newest page is plenty: the releases component shows the latest few
-    fetchPage(`repos/${fullName}/releases`, 1),
+    // The data ends up in every page's bundle, so keep it to the newest
+    // few; the component shows at most five per platform. The html media
+    // type adds body_html, the notes as GitHub renders and sanitizes them.
+    fetchJson(
+      `repos/${fullName}/releases?per_page=${releaseCount}`,
+      "application/vnd.github.html+json",
+    ),
   ]);
 
   return {
@@ -122,16 +134,71 @@ async function fetchRepoData(fullName: string): Promise<RepoData> {
           html_url: r.html_url,
           published_at: r.published_at,
           prerelease: r.prerelease,
-          body: r.body ?? "",
-          assets: (r.assets ?? []).map((a: any) => ({
-            id: a.id,
-            name: a.name,
-            browser_download_url: a.browser_download_url,
-          })),
+          notes_html: stripVersionHeading(r.body_html ?? "", r.tag_name),
+          downloads: downloadsByPlatform(r.assets ?? []),
         }),
       )
-      .sort((a, b) => b.published_at.localeCompare(a.published_at)),
+      .sort((a: Release, b: Release) =>
+        b.published_at.localeCompare(a.published_at),
+      ),
   };
+}
+
+// Checksums, signatures, attestations and SBOMs sit next to the archives
+// but aren't what anyone means by "download".
+const notADownload =
+  /checksums|sha256sums|\.(txt|sig|asc|pem|bundle|json|jsonl|sbom|sha256)$/;
+
+// Release assets name their platform in one of two styles: Go's
+// (`tool_1.2.3_darwin_arm64.tar.gz`) or Rust's target triples
+// (`tool-1.2.3-aarch64-apple-darwin.tar.gz`). Match both by looking for an
+// OS and an architecture anywhere in the name.
+const os: Record<string, RegExp> = {
+  darwin: /darwin|macos|apple/,
+  linux: /linux/,
+  windows: /windows|win64|\.exe$/,
+};
+const arch: Record<string, RegExp> = {
+  amd64: /amd64|x86_64|x64/,
+  arm64: /arm64|aarch64/,
+};
+// macOS universal binaries run on both architectures
+const universal = /universal|darwin[_-]all/;
+
+function assetPlatforms(name: string): Platform[] {
+  const n = name.toLowerCase();
+  if (notADownload.test(n)) return [];
+  return (Object.keys(platforms) as Platform[]).filter((platform) => {
+    const [o, a] = platform.split("_");
+    if (!os[o].test(n)) return false;
+    return arch[a].test(n) || (o === "darwin" && universal.test(n));
+  });
+}
+
+function downloadsByPlatform(
+  assets: any[],
+): Partial<Record<Platform, Download>> {
+  const downloads: Partial<Record<Platform, Download>> = {};
+  for (const asset of assets) {
+    for (const platform of assetPlatforms(asset.name)) {
+      // First match wins; releases list one archive per platform
+      downloads[platform] ??= {
+        name: asset.name,
+        url: asset.browser_download_url,
+      };
+    }
+  }
+  return downloads;
+}
+
+// release-please starts every set of notes with a heading for the version
+// and date (`## [0.7.3](compare link) (2026-10-05)`), which the component
+// already shows. Drop it when it names this release's version.
+function stripVersionHeading(html: string, tag: string): string {
+  const version = tag.replace(/^v/, "");
+  return html.replace(/^\s*<h[1-3][^>]*>([\s\S]*?)<\/h[1-3]>/, (heading, text) =>
+    text.includes(version) ? "" : heading,
+  );
 }
 
 async function fetchOrgData(org: string): Promise<OrgData> {

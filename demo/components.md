@@ -31,6 +31,16 @@ kush prod
 
 </FileTree>
 
+## Releases
+
+Rust-style asset names (`aarch64-apple-darwin`):
+
+<Releases repo="SpechtLabs/telegram-tui" />
+
+A Linux-only project:
+
+<Releases repo="SpechtLabs/StaticPages" />
+
 ## Swagger UI
 
 <SwaggerUI url="/swagger.json" />

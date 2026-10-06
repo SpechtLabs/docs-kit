@@ -94,6 +94,8 @@ config:
     url: /swagger.json
 ```
 
+Releases shows the latest five releases with their notes (rendered by GitHub) and a Download button for the visitor's platform, which it preselects. It recognizes both Go-style asset names (`tool_1.2.3_darwin_arm64.tar.gz`) and Rust target triples (`tool-1.2.3-aarch64-apple-darwin.tar.gz`), skips checksums, signatures and SBOMs, and only offers the platforms the project ships.
+
 Each one wraps the component of the same name without the `VP` prefix (`Contributors`, `Releases`, `Projects`, `ListCompare`, `SwaggerUI`), which can also be used directly in Markdown.
 
 Repository and org names aren't case-sensitive, but every repo and org a page shows has to be listed in the plugin's `github` options.

@@ -30,10 +30,10 @@ config:
     org: SpechtLabs
 
   - type: VPReleases
-    repo: SpechtLabs/tka
+    repo: SpechtLabs/sigil
 
   - type: VPContributors
-    repo: SpechtLabs/tka
+    repo: SpechtLabs/sigil
 
   - type: VPContributors
     org: SpechtLabs
