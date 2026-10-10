@@ -13,7 +13,7 @@ idiomatic_version_file_enable_tools = []
 # `#!/usr/bin/env node` shebang, so node is the runtime the build really uses;
 # markdownlint-cli2 is an npm package mise installs with this node too. Keep
 # node in lockstep with engines.node and @types/node in package.json.
-bun = "1.4.2"
+bun = "1.4.3"
 node = "24.21.0"
 markdownlint-cli2 = "0.23.3"
 
