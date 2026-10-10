@@ -1,6 +1,6 @@
 {
   "name": "@spechtlabs/docs-kit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Shared VuePress components, Markdown containers and build-time GitHub data for the SpechtLabs docs sites",
   "type": "module",
   "author": "Cedric Specht <cedric@specht-labs.de>",
