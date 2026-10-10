@@ -41,7 +41,7 @@
     "vuepress-theme-plume": ">=1.0.0-rc.213"
   },
   "devDependencies": {
-    "@types/node": "^24.19.1",
+    "@types/node": "^24.19.2",
     "@vuepress/bundler-vite": "2.0.0-rc.31",
     "sass-embedded": "^1.105.1",
     "typescript": "^6.0.3",
