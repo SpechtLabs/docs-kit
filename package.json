@@ -33,7 +33,7 @@
   "dependencies": {
     "asciinema-player": "^3.17.0",
     "markdown-it-container": "^4.0.0",
-    "swagger-ui-dist": "^5.33.2"
+    "swagger-ui-dist": "^5.33.3"
   },
   "peerDependencies": {
     "vue": "^3.5.44",
