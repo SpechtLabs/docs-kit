@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/SpechtLabs/docs-kit/compare/v0.1.1...v0.1.2) (2026-10-16)
+
+
+### Bug Fixes
+
+* **deps:** update dependency swagger-ui-dist to ^5.33.2 ([#18](https://github.com/SpechtLabs/docs-kit/issues/18)) ([7178fab](https://github.com/SpechtLabs/docs-kit/commit/7178fab4a087fdb0306f49c3013eb3da55c4cd10))
+* **deps:** update dependency swagger-ui-dist to ^5.33.3 ([#26](https://github.com/SpechtLabs/docs-kit/issues/26)) ([0afd536](https://github.com/SpechtLabs/docs-kit/commit/0afd536c4e46079808813cf7bf8c2ef23dc86f57))
+
 ## [0.1.1](https://github.com/SpechtLabs/docs-kit/compare/v0.1.0...v0.1.1) (2026-10-12)
 
 
