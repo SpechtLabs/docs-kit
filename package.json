@@ -31,7 +31,7 @@
     "demo:build": "vuepress build demo --clean-cache --clean-temp"
   },
   "dependencies": {
-    "asciinema-player": "^3.18.0",
+    "asciinema-player": "^3.18.1",
     "markdown-it-container": "^4.0.0",
     "swagger-ui-dist": "^5.35.0"
   },
