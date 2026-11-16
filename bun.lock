@@ -5,7 +5,7 @@
     "": {
       "name": "@spechtlabs/docs-kit",
       "dependencies": {
-        "asciinema-player": "^3.18.0",
+        "asciinema-player": "^3.18.1",
         "markdown-it-container": "^4.0.0",
         "swagger-ui-dist": "^5.35.0",
       },
@@ -383,7 +383,7 @@
 
     "argparse": ["argparse@3.0.4", "", {}, "sha512-fwWK3Zq22l4XJJjx5mcBHGikIk+hJqO+32dPm0Jur7+rtG5x1scOjSfdT9ZKeWHPpsya/l0HHK4tDImBkTrtvA=="],
 
-    "asciinema-player": ["asciinema-player@3.18.0", "", { "dependencies": { "solid-js": "^1.9.18" } }, "sha512-5gpt2ipFcy4NKmgkv+c/QXnJ9zMicxqWROCOuJqgwwtiYKM8Qe9hnDOvfqke5bW6M2DW/seO3uQYkQ0xeUUVtw=="],
+    "asciinema-player": ["asciinema-player@3.18.1", "", { "dependencies": { "solid-js": "^1.9.18" } }, "sha512-H3blHwZYerDkjUVNABB0zjIzZhZu+JT0/FXT7Skc+4cpa2i7bDab49uOztsIguej4Ppfw6JS0V8J5/6VNqIIkQ=="],
 
     "ast-kit": ["ast-kit@2.2.0", "", { "dependencies": { "@babel/parser": "^7.28.5", "pathe": "^2.0.3" } }, "sha512-m1Q/RaVOnTp9JxPX+F+Zn7IcLYMzM8kZofDImfsKZd8MbR+ikdOzTeztStWqfrqIxZnYWryyI9ePm3NGjnZgGw=="],
 
